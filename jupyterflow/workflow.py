@@ -1,9 +1,8 @@
 import yaml
 
-from . import k8s_client
-from . import render
-from .runtime import runtime
-
+import k8s_client
+import render
+from runtime import runtime
 
 def load_from_command(c):
     jobs = list(map(lambda s: s.strip(), c.split('>>')))
@@ -64,7 +63,11 @@ def build(wf, namespace, runtime, config):
     pod = k8s_client.get_notebook_pod(hostname, namespace)
     workflow['spec'] = build_wf_spec_from(pod)
     override_wf(workflow, config)
+    testV = Volume("test", "uib-pvc")
+    workflow["spec"]["volumes"].append(testV.__dict__)
 
+    testMount = VolumeMount("test", "/home/jovyan/data")
+    workflow["spec"]["volumeMounts"].append(testMount.__dict__)
     ###########################
     # render workflow
     ###########################

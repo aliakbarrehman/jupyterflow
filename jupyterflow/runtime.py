@@ -1,7 +1,7 @@
 import os
 import pwd
 
-from . import utils
+from utils import _get_config_file_path, create_config, load_config, hanle_exception
 
 class Runtime(dict):
     def __init__(self, *args, **kwargs):

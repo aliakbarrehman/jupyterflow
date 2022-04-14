@@ -1,24 +1,24 @@
 import os
 
-import click
-from click import ClickException
+# import click
+# from click import ClickException
 
-from . import workflow
-from . import printer
-from . import utils
-from .runtime import runtime
-
-
-@click.group()
-def main():
-    pass
+import workflow
+import printer
+import utils
+from runtime import runtime
 
 
-@main.command()
-@click.option('-f', '--filename', help='Path for workflow.yaml file. ex) \'jupyterflow run -f workflow.yaml\'', default=None)
-@click.option('-c', '--command', help="Command to run workflow. ex) \'jupyterflow run -c \"python main.py >> python next.py\"\'", default=None)
-@click.option('-o', '--output', help='Output format. default is \'-o jsonpath="metadata.name"\'', default='jsonpath="metadata.name"')
-@click.option('--dry-run', help='Only prints Argo Workflow object, without accually sending it', default=False, is_flag=True)
+# @click.group()
+# def main():
+#     pass
+
+
+# @main.command()
+# @click.option('-f', '--filename', help='Path for workflow.yaml file. ex) \'jupyterflow run -f workflow.yaml\'', default=None)
+# @click.option('-c', '--command', help="Command to run workflow. ex) \'jupyterflow run -c \"python main.py >> python next.py\"\'", default=None)
+# @click.option('-o', '--output', help='Output format. default is \'-o jsonpath="metadata.name"\'', default='jsonpath="metadata.name"')
+# @click.option('--dry-run', help='Only prints Argo Workflow object, without accually sending it', default=False, is_flag=True)
 def run(filename, command, output, dry_run):
 
     if command is not None:
@@ -46,15 +46,15 @@ def run(filename, command, output, dry_run):
     printer.format(response, output)
 
 
-@main.command()
-@click.argument('name')
+# @main.command()
+# @click.argument('name')
 def delete(name):
     response = workflow.delete(name, runtime['namespace'])
     printer.format(response, 'text')
 
 
-@main.command()
-@click.option('--generate-config', help='Generate config file', default=False, is_flag=True)
+# @main.command()
+# @click.option('--generate-config', help='Generate config file', default=False, is_flag=True)
 def config(generate_config):
     if generate_config:
         utils.create_config()

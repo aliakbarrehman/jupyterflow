@@ -2,6 +2,7 @@ import os
 
 import yaml
 import pkgutil
+import base64
 
 
 def _get_config_file_path():
@@ -31,3 +32,20 @@ def load_config():
 
 def hanle_exception():
     pass
+
+def handle_exception(error):
+    print(error)
+    raise Exception(error)
+
+def check_null_or_empty(variable):
+    if (variable is None or str(variable) == ''):
+        return True
+    return False
+
+def encode_base64(value):
+    base64_bytes = base64.b64encode(value.encode("ascii"))
+    return base64_bytes.decode("ascii")
+
+def decode_base64(value):
+    base64_bytes = base64.b64decode(value.encode("ascii"))
+    return base64_bytes.decode("ascii")
