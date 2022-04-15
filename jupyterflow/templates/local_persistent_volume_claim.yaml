@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ volumeClaim['name'] }}-pvc
+  name: {{ volumeClaim['name'] }}
 spec:
   storageClassName: local-storage
   accessModes:

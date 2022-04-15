@@ -52,6 +52,11 @@ spec:
       {%- for v in workflow['spec']['volumeMounts'] %}
       - {{ v | to_nice_yaml | indent(8) }}
       {%- endfor -%}
+      {%- if job['volumeMounts'] %}
+      {%- for job_volume in job['volumeMounts'] %}
+      - {{ job_volume | to_nice_yaml | indent(8) }}
+      {%- endfor -%}
+      {%- endif -%}
       {%- endif -%}
   {%- endfor %}
 

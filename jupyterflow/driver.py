@@ -35,7 +35,15 @@ def run(filename, command, output, dry_run):
     runtime['workingDir'] = workingDir
     namespace = runtime['namespace']
     conf = utils.load_config()
-    wf = workflow.build(user_workflow, namespace, runtime, conf)
+    wf, volumesToMount = workflow.build(user_workflow, namespace, runtime, conf)
+    
+    if (volumesToMount != None and len(volumesToMount) != 0):
+        # Mount the new volumes here
+        print("Mounting Volumes here")
+        # 1. Write a function that takes volumesToMount as input and mounts them one by one
+        #   a. Read env variables (at the moment) for values like azure file share name or key (for local read path)
+        # 2. If Failed to mount throw error
+        # 3. If mount successfull proceed
     
     if dry_run:
         response = wf

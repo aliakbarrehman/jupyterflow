@@ -28,6 +28,7 @@ def build(wf, namespace, runtime, config):
     # resolve tree
     #########################
 
+    volumesToMount = []
     workflow = {}
     workflow['name'] = wf.get('name', hostname)
     workflow['jobs'] = []
@@ -49,25 +50,38 @@ def build(wf, namespace, runtime, config):
     for i, j in enumerate(jobs):
         job = {}
         job['name'] = 'job-' + str(i+1)
+        job_command = j['command']
         if cmd_mode == 'exec':
-            cmds = j.split(' ')
+            cmds = job_command.split(' ')
         else:
-            cmds = ["/bin/sh", "-c", j]
+            cmds = ["/bin/sh", "-c", job_command]
+            
         job['command'] = cmds
         if 'job-' + str(i+1) in resolve_tree:
             job['dependencies'] = resolve_tree['job-' + str(i+1)]
         else:
             job['dependencies'] = []
+        
+        if 'volumes' in j.keys():
+            job['volumeMounts'] = []
+            for v in j['volumes']:
+                volumeMount = dict(name=v['name'], mountPath='~/' + v['path'], readOnly=True)
+                job['volumeMounts'].append(volumeMount)
+                
+                volume = dict(name=v['name'] + '-pv')
+                volume['persistentVolumeClaim'] = dict(claimName=v['name'] + '-pvc')
+                volumesToMount.append(volume)
+        
         workflow['jobs'].append(job)
     
     pod = k8s_client.get_notebook_pod(hostname, namespace)
     workflow['spec'] = build_wf_spec_from(pod)
+    # Add custom volumes to yaml here
+    workflow['spec']['volumes'].extend(volumesToMount)
     override_wf(workflow, config)
-    testV = Volume("test", "uib-pvc")
-    workflow["spec"]["volumes"].append(testV.__dict__)
 
-    testMount = VolumeMount("test", "/home/jovyan/data")
-    workflow["spec"]["volumeMounts"].append(testMount.__dict__)
+    print(workflow)
+    print("\n\n\n")
     ###########################
     # render workflow
     ###########################
@@ -80,10 +94,22 @@ def build(wf, namespace, runtime, config):
     if 'schedule' in wf:
         rendered_wf = render.cronworkflow(workflow_yaml, wf['schedule'])
         workflow_yaml = yaml.safe_load(rendered_wf)
-    return workflow_yaml
+    return workflow_yaml, volumesToMount
         
 
-
+def _get_volume_mount_and_volume(v):
+    volumeMount = {}
+    volumeMount['name'] = v['name']
+    volumeMount['mountPath'] = '~/' + v['path']
+    volumeMount['readOnly'] = True
+    
+    volume = {}
+    volume['name'] = v['name'] + '-pv'
+    volume['persistentVolumeClaim'] = {}
+    volume['persistentVolumeClaim']['claimName'] = v['name'] + '-pvc'
+    
+    return volumeMount, volume
+    
 def run(wf, namespace):
     return k8s_client.create_object(wf, namespace)
     
