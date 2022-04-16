@@ -8,6 +8,8 @@ import printer
 import utils
 from runtime import runtime
 
+import temporary
+
 
 # @click.group()
 # def main():
@@ -37,18 +39,23 @@ def run(filename, command, output, dry_run):
     conf = utils.load_config()
     wf, volumesToMount = workflow.build(user_workflow, namespace, runtime, conf)
     
-    if (volumesToMount != None and len(volumesToMount) != 0):
-        # Mount the new volumes here
-        print("Mounting Volumes here")
-        # 1. Write a function that takes volumesToMount as input and mounts them one by one
-        #   a. Read env variables (at the moment) for values like azure file share name or key (for local read path)
-        # 2. If Failed to mount throw error
-        # 3. If mount successfull proceed
-    
     if dry_run:
         response = wf
         output = 'yaml'
     else:
+        v1 = temporary.get_client()
+        if (volumesToMount != None and len(volumesToMount) != 0):
+            # Mount the new volumes here
+            print("Mounting Volumes here")
+            for volume in volumesToMount:
+                path = '/c/Users/Rehman/Downloads/Thesis/master-thesis-uis/jupyterhub/volumes/uis'
+                size = '100Mi'
+                volumeName = volume['name'].split('-pv')[0]
+                temporary.get_local(v1, volumeName, size, path, 'docker-desktop', namespace)
+            # 1. Write a function that takes volumesToMount as input and mounts them one by one
+            #   a. Read env variables (at the moment) for values like azure file share name or key (for local read path)
+            # 2. If Failed to mount throw error
+            # 3. If mount successfull proceed
         response = workflow.run(wf, namespace)
 
     printer.format(response, output)

@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ volumeClaim['name'] }}
+  name: {{ volumeClaim['name'] }}-pvc
   # Set this annotation to NOT let Kubernetes automatically create
   # a persistent volume for this volume claim.
   annotations:

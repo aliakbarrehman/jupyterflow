@@ -3,11 +3,11 @@
 # Volume: path will be inside the current user home
 jobs:
 - command: 'pwd' 
-- command: 'ls ~/'
-- command: 'ls -la ~/data'
+- command: 'ls /home/jovyan/'
+- command: 'ls -la /home/jovyan/uis'
   volumes:
-  - name: uio
-    path: data/uio
+  - name: 'uis'
+    path: '/home/jovyan/uis'
 - command: 'ls'
 
 # Job index starts at 1.

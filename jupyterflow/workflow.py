@@ -65,7 +65,7 @@ def build(wf, namespace, runtime, config):
         if 'volumes' in j.keys():
             job['volumeMounts'] = []
             for v in j['volumes']:
-                volumeMount = dict(name=v['name'], mountPath='~/' + v['path'], readOnly=True)
+                volumeMount = dict(name=v['name'] + '-pv', mountPath=v['path'])
                 job['volumeMounts'].append(volumeMount)
                 
                 volume = dict(name=v['name'] + '-pv')
@@ -79,9 +79,6 @@ def build(wf, namespace, runtime, config):
     # Add custom volumes to yaml here
     workflow['spec']['volumes'].extend(volumesToMount)
     override_wf(workflow, config)
-
-    print(workflow)
-    print("\n\n\n")
     ###########################
     # render workflow
     ###########################
