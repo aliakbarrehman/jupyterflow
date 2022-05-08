@@ -5,8 +5,8 @@ from kubernetes import config
 from kubernetes import client
 from kubernetes.client.rest import ApiException
 
-from utils import check_null_or_empty, handle_exception
-import classes
+from .utils import check_null_or_empty, handle_exception
+from .classes import LocalVolume, AzureVolume, K8sSecret
 
 def create_object(body, namespace):
     group, version = body['apiVersion'].split('/')
@@ -72,15 +72,15 @@ def get_k8s_client(token, verifySsl=False, sslCert=''):
     return client.CoreV1Api(client.ApiClient(configuration))
 
 def local_persistent_volume(k8s_client, name, size, path, hostname, namespace):
-    volume = classes.LocalVolume(name, size, path, hostname)
+    volume = LocalVolume(name, size, path, hostname)
     return _create_persistent_volume(k8s_client, volume, namespace, 'local')
 
 def azure_persistent_volume(k8s_client, name, size, secret, shareName, namespace):
-    volume = classes.AzureVolume(name, size, secret, shareName)
+    volume = AzureVolume(name, size, secret, shareName)
     return _create_persistent_volume(k8s_client, volume, namespace, 'azure')
     
 def create_secret(k8s_client, name, accountName, accountKey, namespace='default'):
-    secret = classes.K8sSecret(name, accountName, accountKey)
+    secret = K8sSecret(name, accountName, accountKey)
     secret_body = secret.get_secret()
     try:
         k8s_client.create_namespaced_secret(namespace, secret_body)

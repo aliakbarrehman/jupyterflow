@@ -52,7 +52,8 @@ def decode_base64(value):
 
 def getVolumeDetails(volume):
     volume_id = volume['id']
-    filepath = os.path.join(os.getenv('HOME'), '.' + id)
+    home = os.getenv('HOME')
+    filepath = os.path.join(home, '.' + volume_id)
     f = open(filepath, "r")
     mount_options = {}
     for line in f:

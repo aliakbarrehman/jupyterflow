@@ -7,7 +7,7 @@ from . import workflow
 from . import printer
 from . import utils
 from .runtime import runtime
-from k8s_client import get_k8s_client, local_persistent_volume, create_secret, azure_persistent_volume
+from .k8s_client import get_k8s_client, local_persistent_volume, create_secret, azure_persistent_volume
 
 
 @click.group()
@@ -43,11 +43,11 @@ def run(filename, command, output, dry_run):
         output = 'yaml'
     else:
         if (volumes_to_mount != None and len(volumes_to_mount) != 0):
-            client = get_k8s_client('eyJhbGciOiJSUzI1NiIsImtpZCI6IlJmX3JacmVITmdTak5BaHNINWlONlE1cGNwam00cEgzX2FKNFIwWXQ4b2cifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJqaHViIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6InZvbHVtZS1tYW5hZ2VyLXRva2VuLWpxaDZzIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6InZvbHVtZS1tYW5hZ2VyIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZTRiZTAxM2MtODg0Ni00ODMxLTgyMzYtZjBiN2Q3YjEzMmIxIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmpodWI6dm9sdW1lLW1hbmFnZXIifQ.2eQGsSa7mtOXtSOH6WiCCDwufMen08f0J_7WzVvqNBwvV2NOqZ89fX18Aal1L24ndCwXVw-GEYsoHlWQ_mwbZ-SydxBvMhJaGDtbvh40RhRyUeVYfBs37xyiUE8OU9XNdH9lDAKJOjmoavLLkonSuCvmThtnj_0wPQKdLhMHo-a3rHXiGYk_CFqoPoQY4n6kIste1N9fapGxGa0lhjke_SNLDxlK99WLnkDRh6vSNqWswoPjvuhstxEI6axkvHnQRe7qAiWEdxluZoEF6DLCZvUefq3WkKZShz5mOhvVHb1nzqRY9pV5BKJrWCPncYlLveKuIwDIrMgsETw7BxHK8g')
+            client = get_k8s_client(os.getenv('K8S_TOKEN')
             # Mount the new volumes here
             print("Mounting Volumes here")
             for volume in volumes_to_mount:
-                mount_options, volume_type = getVolumeDetails(volume)
+                mount_options, volume_type = utils.getVolumeDetails(volume)
                 if (volume_type == 'azure'):
                     secret_name = mount_options['volume_name'] + '-secret'
                     create_secret(client, secret_name, mount_options['name'], mount_options['key'])
@@ -56,7 +56,7 @@ def run(filename, command, output, dry_run):
                     local_persistent_volume(client, mount_options['volume_name'], mount_options['size'], mount_options['path'], mount_options['hostname'], namespace);
                 else:
                     raise ClickException("Failed to mount volumes")
-        # response = workflow.run(wf, namespace)
+        response = workflow.run(wf, namespace)
 
     printer.format(response, output)
 

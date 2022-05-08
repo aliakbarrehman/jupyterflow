@@ -68,8 +68,8 @@ def build(wf, namespace, runtime, config):
                 volume_mount = dict(name=v['name'] + '-pv', mountPath=v['path'])
                 job['volumeMounts'].append(volume_mount)
                 
-                volume = dict(id=v['id'])
                 volume = dict(name=v['name'] + '-pv')
+                volume['id'] = v['id']
                 volume['persistentVolumeClaim'] = dict(claimName=v['name'] + '-pvc')
                 volumesToMount.append(volume)
         

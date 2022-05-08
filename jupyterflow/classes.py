@@ -1,9 +1,9 @@
-import render
-from runtime import runtime
+from . import render
+from .runtime import runtime
 import yaml
 import random
 
-from utils import encode_base64, decode_base64
+from .utils import encode_base64, decode_base64
 
 class LocalVolume:
     def __init__(self, name, size, path, hostname):
