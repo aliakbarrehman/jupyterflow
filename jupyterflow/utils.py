@@ -49,3 +49,20 @@ def encode_base64(value):
 def decode_base64(value):
     base64_bytes = base64.b64decode(value.encode("ascii"))
     return base64_bytes.decode("ascii")
+
+def getVolumeDetails(volume):
+    volume_id = volume['id']
+    filepath = os.path.join(os.getenv('HOME'), '.' + id)
+    f = open(filepath, "r")
+    mount_options = {}
+    for line in f:
+        pair = line.split(":")
+        key = str(pair[0]).strip()
+        value = str(pair[1]).strip()
+        mount_options[key] = value
+    mount_options['volume_name'] = volume['name'].split('-pv')[0]
+    mount_options['size'] = '100Mi'
+    volume_type = 'azure'
+    if 'hostname' in mount_options.keys():
+        volume_type = 'local'
+    return mount_options, volume_type

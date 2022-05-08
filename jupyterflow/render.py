@@ -1,4 +1,4 @@
-from jinja2 import Environment, BaseLoader, PackageLoader, Template, FileSystemLoader
+from jinja2 import Environment, BaseLoader, PackageLoader, Template
 
 
 def workflow(workflow, runtime):
@@ -17,8 +17,8 @@ def cronworkflow(workflow_yaml, schedule):
 
 
 def get_template(name):
-    # env = Environment(loader=PackageLoader('jupyterflow', 'templates'), extensions=['jinja2_ansible_filters.AnsibleCoreFiltersExtension'])
-    env = Environment(loader=FileSystemLoader('templates/'), extensions=['jinja2_ansible_filters.AnsibleCoreFiltersExtension'])
+    env = Environment(loader=PackageLoader('jupyterflow', 'templates'), extensions=['jinja2_ansible_filters.AnsibleCoreFiltersExtension'])
+    # env = Environment(loader=FileSystemLoader('templates/'), extensions=['jinja2_ansible_filters.AnsibleCoreFiltersExtension'])
     return env.get_template(name)
 
 def local_persistent_volume(volume, runtime):

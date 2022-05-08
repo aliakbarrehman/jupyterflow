@@ -1,8 +1,8 @@
 import yaml
 
-import k8s_client
-import render
-from runtime import runtime
+from . import k8s_client
+from . import render
+from .runtime import runtime
 
 def load_from_command(c):
     jobs = list(map(lambda s: s.strip(), c.split('>>')))
@@ -65,9 +65,10 @@ def build(wf, namespace, runtime, config):
         if 'volumes' in j.keys():
             job['volumeMounts'] = []
             for v in j['volumes']:
-                volumeMount = dict(name=v['name'] + '-pv', mountPath=v['path'])
-                job['volumeMounts'].append(volumeMount)
+                volume_mount = dict(name=v['name'] + '-pv', mountPath=v['path'])
+                job['volumeMounts'].append(volume_mount)
                 
+                volume = dict(id=v['id'])
                 volume = dict(name=v['name'] + '-pv')
                 volume['persistentVolumeClaim'] = dict(claimName=v['name'] + '-pvc')
                 volumesToMount.append(volume)

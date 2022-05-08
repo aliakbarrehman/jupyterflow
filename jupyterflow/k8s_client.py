@@ -56,7 +56,8 @@ def get_notebook_pod(hostname, namespace):
     
     return json.loads(response.data)
 
-def get_k8s_client(host, token, verifySsl=False, sslCert=''):
+def get_k8s_client(token, verifySsl=False, sslCert=''):
+    host = config.kube_config.Configuration.get_default_copy().host
     if (check_null_or_empty(host) or check_null_or_empty(token)):
         raise Exception('host or token cannot be null')
         
